@@ -1,0 +1,52 @@
+{
+  "get": "players",
+  "response": [
+    {
+      "player": {
+        "id": 559,
+        "name": "G. Conti",
+        "firstname": "Germán Andrés",
+        "lastname": "Conti",
+        "age": 31,
+        "nationality": "Argentina",
+        "photo": "https://media.api-sports.io/football/players/559.png"
+      },
+      "statistics": [
+        {
+          "team": {"id": 448, "name": "Colon Santa Fe"},
+          "league": {"season": 2024},
+          "games": {"appearences": null, "lineups": null, "minutes": null, "position": "Defender"},
+          "goals": {"total": null, "assists": null},
+          "cards": {"yellow": null, "red": null}
+        }
+      ]
+    },
+    {
+      "player": {
+        "id": 59313,
+        "name": "M. Monllor",
+        "firstname": "Mariano",
+        "lastname": "Monllor",
+        "age": 36,
+        "nationality": "Argentina",
+        "photo": "https://media.api-sports.io/football/players/59313.png"
+      },
+      "statistics": [
+        {
+          "team": {"id": 461, "name": "San Martin S.J."},
+          "league": {"season": 2024},
+          "games": {"appearences": null, "lineups": null, "minutes": null, "position": "Goalkeeper"},
+          "goals": {"total": null, "assists": null},
+          "cards": {"yellow": null, "red": null}
+        },
+        {
+          "team": {"id": 470, "name": "Ferro Carril Oeste"},
+          "league": {"season": 2024},
+          "games": {"appearences": 10, "lineups": 10, "minutes": 900, "position": "Goalkeeper"},
+          "goals": {"total": 0, "assists": null},
+          "cards": {"yellow": 1, "red": 1}
+        }
+      ]
+    }
+  ]
+}
