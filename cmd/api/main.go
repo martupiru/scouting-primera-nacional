@@ -5,12 +5,14 @@ import (
 	"os"
 
 	"github.com/martupiru/scouting-primera-nacional/internal/apifootball"
+	"github.com/martupiru/scouting-primera-nacional/internal/models"
 	"github.com/martupiru/scouting-primera-nacional/internal/scoring"
 )
 
 const (
 	leagueID = 129
 	season   = 2024
+	topN     = 10
 )
 
 func main() {
@@ -21,14 +23,11 @@ func main() {
 	}
 
 	client := apifootball.NewClient(apiKey)
-
 	cache, err := apifootball.NewCache("cache")
 	if err != nil {
 		fmt.Printf("Error iniciando caché: %v\n", err)
 		os.Exit(1)
 	}
-
-	fmt.Println("Trayendo jugadores de Primera Nacional 2024...")
 
 	firstPage, err := client.GetPlayersCached(cache, leagueID, season, 1)
 	if err != nil {
@@ -37,8 +36,6 @@ func main() {
 	}
 
 	totalPages := firstPage.Paging.Total
-	fmt.Printf("Total de páginas: %d\n\n", totalPages)
-
 	allEntries := firstPage.Response
 
 	for page := 2; page <= totalPages; page++ {
@@ -50,24 +47,47 @@ func main() {
 		allEntries = append(allEntries, resp.Response...)
 	}
 
-	fmt.Printf("\nTotal jugadores recibidos: %d\n", len(allEntries))
-	fmt.Println("Jugadores elegibles (≥90 min):\n")
+	// Convertir al formato que espera RankByPosition.
+	entries := make([]struct {
+		Player models.Player
+		Stats  []models.PlayerStats
+	}, len(allEntries))
 
-	for _, entry := range allEntries {
-		player, statsList := apifootball.ToDomain(entry)
-		agg := scoring.Aggregate(statsList, season)
+	for i, e := range allEntries {
+		player, stats := apifootball.ToDomain(e)
+		entries[i].Player = player
+		entries[i].Stats = stats
+	}
 
-		if !agg.IsEligible() {
+	ranking := scoring.RankByPosition(entries, season, topN)
+
+	positions := []string{"Attacker", "Midfielder", "Defender", "Goalkeeper"}
+	labels := map[string]string{
+		"Attacker":   "DELANTEROS",
+		"Midfielder": "MEDIOCAMPISTAS",
+		"Defender":   "DEFENSORES",
+		"Goalkeeper": "ARQUEROS",
+	}
+
+	for _, pos := range positions {
+		players, ok := ranking[pos]
+		if !ok || len(players) == 0 {
 			continue
 		}
-
-		fmt.Printf("%-20s | %-12s | %4d min | %.2f goles/90 | %.2f asist/90 | %.2f tarj/90\n",
-			player.Name,
-			agg.Position,
-			agg.Minutes,
-			agg.GoalsPer90(),
-			agg.AssistsPer90(),
-			agg.CardsPer90(),
-		)
+		fmt.Printf("\n=== %s ===\n", labels[pos])
+		fmt.Printf("%-4s %-20s %-6s %-10s %-10s %-10s %-8s\n",
+			"#", "Jugador", "Min", "Goles/90", "Asist/90", "Tarj/90", "Score")
+		fmt.Println("--------------------------------------------------------------------")
+		for i, p := range players {
+			fmt.Printf("%-4d %-20s %-6d %-10.2f %-10.2f %-10.2f %-8.1f\n",
+				i+1,
+				p.Player.Name,
+				p.Stats.Minutes,
+				p.Stats.GoalsPer90(),
+				p.Stats.AssistsPer90(),
+				p.Stats.CardsPer90(),
+				p.Score,
+			)
+		}
 	}
 }
