@@ -3,6 +3,10 @@ package apifootball
 // PlayersResponse representa la respuesta completa del endpoint /players.
 type PlayersResponse struct {
 	Response []PlayerEntry `json:"response"`
+	Paging   struct {
+		Current int `json:"current"`
+		Total   int `json:"total"`
+	} `json:"paging"`
 }
 
 // PlayerEntry agrupa los datos básicos de un jugador con sus estadísticas.

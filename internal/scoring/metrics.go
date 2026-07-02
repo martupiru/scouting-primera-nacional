@@ -4,7 +4,7 @@ import "github.com/martupiru/scouting-primera-nacional/internal/models"
 
 // MinMinutesThreshold es el mínimo de minutos jugados para que un jugador
 // sea considerado en el ranking (evita que muestras chicas distorsionen el resultado
-const MinMinutesThreshold = 450
+const MinMinutesThreshold = 300
 
 // AggregatedStats junta las estadísticas de un jugador en una temporada
 // sumando todos los equipos en los que jugó
